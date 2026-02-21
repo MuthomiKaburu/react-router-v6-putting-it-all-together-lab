@@ -1,41 +1,56 @@
 import { useState } from "react"
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from "uuid"
+import { useParams, useOutletContext, useNavigate } from "react-router-dom"
 
 function MovieForm() {
   const [title, setTitle] = useState("")
   const [time, setTime] = useState("")
   const [genres, setGenres] = useState("")
 
-  // Replace me
-  const director = null
-  
-  if (!director) { return <h2>Director not found.</h2>}
+  const { id } = useParams()
+  const { directors, setDirectors } = useOutletContext()
+  const navigate = useNavigate()
+
+const director = directors.find(d => d.id === id)
+
+  if (!director) return <h2>Director not found.</h2>
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
     const newMovie = {
       id: uuidv4(),
       title,
       time: parseInt(time),
-      genres: genres.split(",").map((genre) => genre.trim()),
+      genres: genres.split(",").map(g => g.trim())
     }
+
     fetch(`http://localhost:4000/directors/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({movies: [...director.movies, newMovie]})
+      body: JSON.stringify({
+        movies: [...director.movies, newMovie]
+      })
     })
-    .then(r => {
-      if (!r.ok) { throw new Error("failed to add movie") }
-      return r.json()
-    })
-    .then(data => {
-      console.log(data)
-      // handle context/state changes
-      // navigate to newly created movie page
-    })
-    .catch(console.log)
+      .then(r => {
+        if (!r.ok) throw new Error("failed to add movie")
+        return r.json()
+      })
+      .then(data => {
+
+        // Update global state
+        const updatedDirectors = directors.map(d =>
+          d.id === data.id ? data : d
+        )
+
+        setDirectors(updatedDirectors)
+
+        // Redirect to movie detail page
+        navigate(`/directors/${data.id}/movies/${newMovie.id}`)
+      })
+      .catch(console.log)
   }
 
   return (
@@ -49,6 +64,7 @@ function MovieForm() {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+
         <input
           type="number"
           placeholder="Duration (minutes)"
@@ -56,6 +72,7 @@ function MovieForm() {
           onChange={(e) => setTime(e.target.value)}
           required
         />
+
         <input
           type="text"
           placeholder="Genres (comma-separated)"
@@ -63,6 +80,7 @@ function MovieForm() {
           onChange={(e) => setGenres(e.target.value)}
           required
         />
+
         <button type="submit">Add Movie</button>
       </form>
     </div>
@@ -70,4 +88,3 @@ function MovieForm() {
 }
 
 export default MovieForm
-

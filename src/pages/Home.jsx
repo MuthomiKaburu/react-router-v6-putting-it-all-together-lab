@@ -1,9 +1,9 @@
 import NavBar from "../components/NavBar"
+import { Link } from "react-router"
 
 function Home() {
   return (
     <>
-      <NavBar />
       <main>
         <h1>🎬 Welcome to the Movie Directory 🎥</h1>
         <p>
@@ -13,7 +13,8 @@ function Home() {
         <nav>
           {/* add links for directors page and about page */}
           <a>View Directors</a> |{" "}
-          <a>Learn More About This App</a>
+          <Link to={"/about"}>Learn More About This App</Link>
+          
         </nav>
       </main>
     </>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import NavBar from '../components/NavBar';
-
+import { Outlet } from 'react-router';
 const DirectorContainer = () => {
     const [directors, setDirectors] = useState([])
 
@@ -10,16 +9,16 @@ const DirectorContainer = () => {
             if (!r.ok) { throw new Error("failed to fetch directors") }
             return r.json()
         })
-        .then(setDirectors)
+        .then(data => setDirectors(data))
         .catch(console.log)
     }, [])
 
     return (
         <>
-            <NavBar />
             <main>
                 <h1>Welcome to the Director's Directory!</h1>
                 {/* all director components should render here depending on route */}
+                <Outlet context={{directors,setDirectors}}/>
             </main>
         </>
     );
