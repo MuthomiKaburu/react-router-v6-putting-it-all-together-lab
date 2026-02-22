@@ -1,4 +1,3 @@
-import NavBar from "../components/NavBar"
 import { Link } from "react-router"
 
 function Home() {
